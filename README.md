@@ -17,8 +17,8 @@ Just Chrome right now, although it'll probably work elsewhere as well.
 ## Install/run
 To install and run your own copy
 
-  npm install
-  npm run-script server
+    npm install
+    npm run-script server
 
 
 ## Known Issues
