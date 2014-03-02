@@ -1,0 +1,110 @@
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 300;
+}
+
+.no-frame header {
+  display: none;
+}
+
+.no-frame #display {
+  padding: 0px;
+}
+
+.no-frame footer {
+  display: none;
+}
+
+.no-frame .page-container {
+  margin: 0;
+}
+
+.page-container {
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.page-container iframe {
+  border-width: 0;
+}
+
+header {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  overflow: hidden;
+  padding: 0 20px;
+}
+
+header h1 {
+  font-family: 'Russo One', sans-serif;
+  margin: 0;
+  padding: 0;
+  padding-top: 5px;
+  margin-bottom: -4px;
+  font-size: 30px;
+}
+
+header h1 .icon-fullscreen {
+  margin-right: 3px;
+}
+
+form input {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  padding: 3px 5px;
+  border-color: rgb(200, 200, 200);
+}
+
+form select {
+  border-style: solid;
+  border-width: 1px;
+  padding: 3px 5px;
+}
+
+form fieldset {
+  display: block;
+  border-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+form #url {
+  width: 100%;
+}
+
+form #sizes {
+  width: 220px;
+}
+
+form .screen-size input {
+  display: inline-block;
+  width: 60px;
+}
+
+footer {
+  text-align: center;
+  padding: 5px;
+  font-size: smaller;
+  color: rgb(34, 34, 34);
+}
+
+#display {
+  padding: 10px;
+}

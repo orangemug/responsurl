@@ -7,7 +7,7 @@ The aim is to create an iframe of the target size, but scale it so it fits your 
 What it's got:
 
  * Some screen size presets
- * Unit fields are [incremental](https://github.com/orangemug/incremental)able (`ALT`/`SHIFT`+`UP`/`DOWN`)
+ * Unit fields are [incremental](https://github.com/orangemug/incremental)able (`ALT/SHIFT`+`UP/DOWN`)
  * A shareable URL
 
 See it in action <http://orangemug.github.com/responsurl>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>responsurl</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link href='http://fonts.googleapis.com/css?family=Russo+One' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+  </head>
+  <body>
+
+    <header>
+      <h1>
+        <span class="icon-fullscreen"></span>RESPONSURL
+      </h1>
+      <form id="url-form">
+        <fieldset>
+          <input id="url" type="text" value="http://localhost:3000/test.html">
+        </fieldset>
+        <fieldset class="screen-size">
+          <input id="width"  value="1280"> x
+          <input id="height" value="800">
+          <select id="sizes">
+            <option value="-1">custom</option>
+            <option value="320x480">320x480 Phone (portrait)</option>
+            <option value="480x320">480x320 Phone (landscape)</option>
+            <option value="480x800">480x800 Small Tablet (portrait)</option>
+            <option value="800x480">800x480 Small Tablet (landscape)</option>
+            <option value="768x1024">768x1024 Large Tablet (portrait)</option>
+            <option value="1024x768">1024x768 Large Tablet (landscape)</option>
+            <option value="1280x800">1280x800 Desktop</option>
+          </select>
+        </fieldset>
+      </form>
+    </header>
+    <section id="display">
+      <div class="page-container">
+        <iframe src="" class="screen"></iframe>
+      </div>
+      <footer>
+        <div class="scaled-by"> - </div>
+      </footer>
+    </section>
+    <!-- scripts -->
+    <script type="text/javascript" src="/app.js"></script>
+  </body>
+</html>
+
