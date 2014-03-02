@@ -10,7 +10,7 @@ What it's got:
  * Unit fields are [incremental](https://github.com/orangemug/incremental)able (`ALT`/`SHIFT`+`UP`/`DOWN`)
  * A shareable URL
 
-See it in action <orangemug.github.com/responsurl>
+See it in action <http://orangemug.github.com/responsurl>
 
 
 ## Supported browsers
