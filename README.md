@@ -1,7 +1,4 @@
 # Responsurl
-
-![screenshot](assets/screenshot.png)
-
 The aim is to create an iframe of the target size, but scale it so it fits your screen, with a shareable url. Basically so you can see your mediaqueries in page without having to pan about.
 
 What it's got:

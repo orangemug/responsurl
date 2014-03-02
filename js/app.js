@@ -3,6 +3,7 @@ var debounce = require("lodash.debounce");
 var incremental = require("../../incremental");
 
 var qs = document.querySelector.bind(document);
+var frameUrl;
 
 /**
  * Scale to a maximum width/height
@@ -97,8 +98,10 @@ function render() {
   iframeEl.style.width = w+"px";
   iframeEl.style.height = h+"px";
 
-  if(iframeEl.src !== qUrl) {
+  // Check if we have a url match
+  if(frameUrl !== qUrl) {
     iframeEl.src = qUrl;
+    frameUrl = qUrl;
   }
 
   var scaledLabelEl = qs(".scaled-by");
