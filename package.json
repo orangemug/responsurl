@@ -4,13 +4,13 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "browserify": "*",
-    "express": "*",
-    "browserify-middleware": "*"
+    "browserify": "~3.31",
+    "express": "~3.4",
+    "browserify-middleware": "~2.3"
   },
   "dependencies": {
-    "incremental": "*",
-    "lodash.debounce": "*"
+    "incremental": "git://github.com/orangemug/incremental.git",
+    "lodash.debounce": "~2.4"
   },
   "scripts": {
     "server": "node server.js"
