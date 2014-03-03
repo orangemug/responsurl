@@ -137,15 +137,13 @@ function setup() {
   var heightEl = qs("#height");
   var sizeEl   = qs("#sizes");
 
-  var hdl = function(e) {
-    incremental._hdl({
-      modifier: function(e) {
-        if(e.altKey) return 100;
-        if(e.shiftKey) return 10;
-        return 1;
-      }
-    }, e);
-  }
+  var hdl = incremental.handler({
+    modifier: function(e) {
+      if(e.altKey) return 100;
+      if(e.shiftKey) return 10;
+      return 1;
+    }
+  });
 
   // incremental handlers
   widthEl.addEventListener("keyup", hdl);
