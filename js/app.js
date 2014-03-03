@@ -61,6 +61,30 @@ function getAvailableHeight() {
   return (bodyHeight - headerEl.offsetHeight - footerEl.offsetHeight - padding);
 }
 
+function updateSelect(sizeStr) {
+  var sizesEl  = qs("#sizes");
+  for(var i=0; i<sizesEl.options.length; i++) {
+    var size = sizesEl[i];
+    if(size.value === sizeStr) {
+      size.selected = true;
+      return;
+    }
+  }
+  sizesEl.value = "-1";
+}
+
+function updateUI(url, w, h) {
+  var urlEl    = qs("#url");
+  var widthEl  = qs("#width");
+  var heightEl = qs("#height");
+
+  if(urlEl.value !== url) urlEl.value  = url;
+  if(widthEl.value !== w.toString()) widthEl.value  = w;
+  if(heightEl.value !== h.toString()) heightEl.value = h;
+
+  updateSelect(w+"x"+h);
+}
+
 function render() {
   var query = url.parse(document.location.href, true).query;
   var w   = parseInt(query.w, 10);
@@ -68,6 +92,8 @@ function render() {
   var qUrl = query.url;
   var frameless = (query.frameless === "true");
   var stretch   = (query.stretch   === "true");
+
+  updateUI(qUrl, w, h);
 
   if(frameless) {
     document.body.classList.add("no-frame");
