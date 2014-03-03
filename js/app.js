@@ -112,7 +112,7 @@ render = debounce(render, 100);
 
 
 function setUrl(url, w, h) {
-  history.pushState({}, undefined, "/?w="+w+"&h="+h+"&url="+url);
+  history.pushState({}, undefined, document.location.origin+document.location.pathname+"?w="+w+"&h="+h+"&url="+url);
   render();
 }
 
