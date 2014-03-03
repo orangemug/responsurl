@@ -78,9 +78,11 @@ function updateUI(url, w, h) {
   var widthEl  = qs("#width");
   var heightEl = qs("#height");
 
-  if(urlEl.value !== url) urlEl.value  = url;
-  if(widthEl.value !== w.toString()) widthEl.value  = w;
-  if(heightEl.value !== h.toString()) heightEl.value = h;
+  if(url && urlEl.value !== url) {
+    urlEl.value  = url;
+  }
+  if(w != w && widthEl.value !== w.toString()) widthEl.value  = w;
+  if(h != h && heightEl.value !== h.toString()) heightEl.value = h;
 
   updateSelect(w+"x"+h);
 }
@@ -198,6 +200,7 @@ function setup() {
 
   // Initial render
   render();
+  updateUrl();
 }
 
 window.addEventListener('load', setup, false);
