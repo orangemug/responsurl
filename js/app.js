@@ -175,3 +175,6 @@ function setup() {
 }
 
 window.addEventListener('load', setup, false);
+
+// HACK!
+window._responsurl = true;
