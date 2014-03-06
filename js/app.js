@@ -164,14 +164,23 @@ function setup() {
   var widthEl  = qs("#width");
   var heightEl = qs("#height");
   var sizeEl   = qs("#sizes");
+  var switchEl = qs(".js-switch");
 
-  var hdl = incremental.handler({
+  var hdl = incremental({
     modifier: function(e) {
       if(e.altKey) return 100;
       if(e.shiftKey) return 10;
       return 1;
     }
   });
+
+  switchEl.addEventListener("click", function(e) {
+    var tmp = widthEl.value;
+    widthEl.value = heightEl.value;
+    heightEl.value = tmp;
+    updateUrl();
+    e.preventDefault();
+  })
 
   // incremental handlers
   widthEl.addEventListener("keyup", hdl);
