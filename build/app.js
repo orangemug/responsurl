@@ -4,13 +4,14 @@ var selectRange = require("./lib/selection");
 var numberAtPos = require("./lib/number-at-pos");
 var keys = require("./lib/keys");
 
-// Elements bound
-var binds = [];
-
 function defaultModifier(e) {
   if(e.shiftKey) return 10;
   if(e.altKey) return 0.1;
   return 1;
+}
+
+function isNaN(v) {
+  return v !== v;
 }
 
 /**
@@ -18,13 +19,25 @@ function defaultModifier(e) {
  * @param {KeyboardEvent} e
  */
 function hdl(opts, e) {
-  var tmp, start, end, caret, multiplier, modifier, incr;
+  var tmp, start, end, caret, multiplier, modifier, incr, offset;
   var kc = e.keyCode;
   var el = e.target;
   var val = el.value;
   var origVal = val;
 
   opts = opts || {};
+
+  if(kc === keys.UP) {
+    multiplier = 1;
+  } else if(kc === keys.DOWN) {
+    multiplier = -1;
+  } else {
+    return;
+  }
+
+  // If up/down keys are pressed always prevent caret movement. This also
+  // prevents the selection from being altered
+  e.preventDefault();
 
   modifier = opts.modifier || defaultModifier;
 
@@ -46,15 +59,7 @@ function hdl(opts, e) {
 
   // Is our value a number?
   val = parseFloat(val);
-  if(val === undefined) {
-    return;
-  }
-
-  if(kc === keys.UP) {
-    multiplier = 1;
-  } else if(kc === keys.DOWN) {
-    multiplier = -1;
-  } else {
+  if(val === undefined || isNaN(val)) {
     return;
   }
 
@@ -64,8 +69,14 @@ function hdl(opts, e) {
 
   // Set the value
   if(opts.partials) {
+    if(start === caret && newVal.substring(0,1) === "-") {
+      caret += 1;
+    }
     // Replace in the original string
-    caret = start;
+    offset = newVal.length - (end-start);
+    if(offset < 0 && caret > end+offset) {
+      caret += offset;
+    }
     newVal = origVal.slice(0, start) + newVal + origVal.slice(end);
   }
 
@@ -74,56 +85,15 @@ function hdl(opts, e) {
 
   // Reset the selection
   selectRange(el, caret);
-
-  // Prevent the selection from being altered
-  e.preventDefault();
-}
-
-/**
- * Bind an input
- * @param {HTMLInputElement} el
- * @param {Object} [increments]
- * @return {HTMLInputElement} element passed
- */
-function bind(el, opts) {
-  var boundFn = hdl.bind(null, opts);
-  binds.push({
-    el: el,
-    hdl: boundFn
-  })
-  el.addEventListener("keydown", boundFn);
-  return el;
-}
-
-/**
- * Unbind an input
- * @param {HTMLInputElement} el
- * @return boolean if an element was unbound
- */
-function unbind(el) {
-  var itemToRemove = binds.find(function(item) {
-    return (el === item.el);
-  });
-
-  if(itemToRemove) {
-    itemToRemove.el.removeEventListener("keydown", itemToRemove.hdl);
-    return true;
-  }
 }
 
 function handler(opts) {
-  return hdl.bind(null, opts);
+  return function(e) {
+    hdl(opts, e);
+  }
 }
 
-module.exports = {
-  // Expose or tests
-  _binds: binds,
-  _hdl: hdl,
-  // API
-  handler: handler,
-  bind: bind,
-  unbind: unbind
-};
+module.exports = handler;
 
 },{"./lib/keys":2,"./lib/number-at-pos":3,"./lib/percision":4,"./lib/selection":5}],2:[function(require,module,exports){
 module.exports = {
@@ -390,14 +360,23 @@ function setup() {
   var widthEl  = qs("#width");
   var heightEl = qs("#height");
   var sizeEl   = qs("#sizes");
+  var switchEl = qs(".js-switch");
 
-  var hdl = incremental.handler({
+  var hdl = incremental({
     modifier: function(e) {
       if(e.altKey) return 100;
       if(e.shiftKey) return 10;
       return 1;
     }
   });
+
+  switchEl.addEventListener("click", function(e) {
+    var tmp = widthEl.value;
+    widthEl.value = heightEl.value;
+    heightEl.value = tmp;
+    updateUrl();
+    e.preventDefault();
+  })
 
   // incremental handlers
   widthEl.addEventListener("keyup", hdl);
