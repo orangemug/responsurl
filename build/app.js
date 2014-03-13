@@ -335,8 +335,20 @@ function render() {
 render = debounce(render, 100);
 
 
-function setUrl(url, w, h) {
-  history.pushState({}, undefined, document.location.origin+document.location.pathname+"?w="+w+"&h="+h+"&url="+url);
+function queryToString(obj) {
+  var out = [];
+  for(var k in obj) {
+    out.push(k+"="+obj[k]);
+  }
+  return out.join("&");
+}
+
+function setUrl(href, w, h) {
+  var q = url.parse(document.location.href, true).query;
+  q.w = w;
+  q.h = h;
+  q.url = href;
+  history.pushState({}, undefined, document.location.origin+document.location.pathname+"?"+queryToString(q));
   render();
 }
 
