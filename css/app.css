@@ -101,6 +101,11 @@ form .screen-size input {
 form a.switch {
   color: black;
   margin-right: 5px;
+  transition: color 180ms ease;
+}
+
+form a.switch:hover {
+  color: rgb(100, 100, 100);
 }
 
 footer {
