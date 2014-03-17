@@ -81,8 +81,8 @@ function updateUI(url, w, h) {
   if(url && urlEl.value !== url) {
     urlEl.value  = url;
   }
-  if(w != w && widthEl.value !== w.toString()) widthEl.value  = w;
-  if(h != h && heightEl.value !== h.toString()) heightEl.value = h;
+  if(!Number.isNaN(w) && widthEl.value !== w.toString()) widthEl.value  = w;
+  if(!Number.isNaN(h) && heightEl.value !== h.toString()) heightEl.value = h;
 
   updateSelect(w+"x"+h);
 }
