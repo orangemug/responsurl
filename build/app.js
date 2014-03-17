@@ -332,7 +332,7 @@ function render() {
   scaledLabelEl.innerHTML = "(scaled by x"+scaledVal.scale+")";
 }
 
-render = debounce(render, 100);
+debouncedRender = debounce(render, 100);
 
 
 function queryToString(obj) {
@@ -367,6 +367,8 @@ function updateUrl() {
   setUrl(url, w, h);
 }
 
+var debouncedUpdateUrl = debounce(updateUrl, 100);
+
 function setup() {
   var urlEl    = qs("#url");
   var widthEl  = qs("#width");
@@ -395,8 +397,8 @@ function setup() {
   heightEl.addEventListener("keyup", hdl);
 
   // URL bindings
-  widthEl.addEventListener("keyup", updateUrl);
-  heightEl.addEventListener("keyup", updateUrl);
+  widthEl.addEventListener("keyup", debouncedUpdateUrl);
+  heightEl.addEventListener("keyup", debouncedUpdateUrl);
   urlEl.addEventListener("blur", updateUrl);
   urlEl.addEventListener("keyup", function(e) {
     // If enter key is pressed
@@ -413,7 +415,7 @@ function setup() {
   })
 
   window.addEventListener("popstate", render);
-  window.addEventListener("resize", render);
+  window.addEventListener("resize", debouncedRender);
 
   // Initial render
   render();
