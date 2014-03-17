@@ -221,6 +221,13 @@ function setup() {
   window.addEventListener("popstate", render);
   window.addEventListener("resize", debouncedRender);
 
+  // HACK: To prevent the browser auto scrolling div on link click within iframe.
+  var pageEl = document.querySelector(".page-container");
+  pageEl.addEventListener("scroll", function(e) {
+    pageEl.scrollTop = 0;
+    pageEl.scrollLeft = 0;
+  }, false);
+
   // Initial render
   render();
   updateUrl();
