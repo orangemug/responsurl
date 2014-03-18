@@ -47,18 +47,18 @@ function scaleToMax(w, h, mw, mh, stretch) {
  * Get the available height or the frame
  */
 function getAvailableHeight() {
-  var padding, bodyHeight;
+  var border, bodyHeight;
   var headerEl    = qs("header");
-  var containerEl = qs("#display");
+  var containerEl = qs(".page-container");
   var footerEl    = qs("footer");
   var containerCS = window.getComputedStyle(containerEl);
 
   // Get the padding
-  padding  = parseInt(containerCS.paddingTop);
-  padding += parseInt(containerCS.paddingBottom);
+  border  = parseInt(containerCS.borderTop);
+  border += parseInt(containerCS.borderBottom);
 
   bodyHeight = document.body.clientHeight;
-  return (bodyHeight - headerEl.offsetHeight - footerEl.offsetHeight - padding);
+  return (bodyHeight - headerEl.offsetHeight - footerEl.offsetHeight -border);
 }
 
 function updateSelect(sizeStr) {
