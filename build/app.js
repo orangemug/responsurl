@@ -1,202 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var percision = require("./lib/percision");
-var selectRange = require("./lib/selection");
-var numberAtPos = require("./lib/number-at-pos");
-var keys = require("./lib/keys");
-
-function defaultModifier(e) {
-  if(e.shiftKey) return 10;
-  if(e.altKey) return 0.1;
-  return 1;
-}
-
-function isNaN(v) {
-  return v !== v;
-}
-
-/**
- * @param {Function|undefined} incrs
- * @param {KeyboardEvent} e
- */
-function hdl(opts, e) {
-  var tmp, start, end, caret, multiplier, modifier, incr, offset;
-  var kc = e.keyCode;
-  var el = e.target;
-  var val = el.value;
-  var origVal = val;
-
-  opts = opts || {};
-
-  if(kc === keys.UP) {
-    multiplier = 1;
-  } else if(kc === keys.DOWN) {
-    multiplier = -1;
-  } else {
-    return;
-  }
-
-  // If up/down keys are pressed always prevent caret movement. This also
-  // prevents the selection from being altered
-  e.preventDefault();
-
-  modifier = opts.modifier || defaultModifier;
-
-  incr = modifier(e);
-  if(incr === undefined) {
-    return;
-  }
-
-  if(opts.partials) {
-    caret = e.target.selectionStart;
-    tmp = numberAtPos(val, caret);
-
-    if(tmp) {
-      val = tmp.val;
-      start = tmp.start;
-      end = tmp.end;
-    }
-  }
-
-  // Is our value a number?
-  val = parseFloat(val);
-  if(val === undefined || isNaN(val)) {
-    return;
-  }
-
-  // Calc new value
-  newVal = (val + incr * multiplier);
-  newVal = newVal.toFixed(percision.max(val, incr));
-
-  // Set the value
-  if(opts.partials) {
-    if(start === caret && newVal.substring(0,1) === "-") {
-      caret += 1;
-    }
-    // Replace in the original string
-    offset = newVal.length - (end-start);
-    if(offset < 0 && caret > end+offset) {
-      caret += offset;
-    }
-    newVal = origVal.slice(0, start) + newVal + origVal.slice(end);
-  }
-
-  // Set new value
-  el.value = newVal;
-
-  // Reset the selection
-  selectRange(el, caret);
-}
-
-function handler(opts) {
-  return function(e) {
-    hdl(opts, e);
-  }
-}
-
-module.exports = handler;
-
-},{"./lib/keys":2,"./lib/number-at-pos":3,"./lib/percision":4,"./lib/selection":5}],2:[function(require,module,exports){
-module.exports = {
-  UP:   38,
-  DOWN: 40
-};
-
-},{}],3:[function(require,module,exports){
-/**
- * Get the number string at pos. For example given the position `7` and string
- *
- *     "rgba(200, 100, 0)"
- *            ^
- *            |
- *            |
- *          [pos]
- *
- * It'll return
- *
- *     {val: 200, start: 6, end: 8};
- *
- * @param {Number|String} val
- * @param {Number} pos
- */
-module.exports = function(val, pos) {
-  var rslt, start, end, re = /([-+]?(?:[0-9]*\.[0-9]+|[0-9]+))/g;
-	val = val.toString();
-
-  while(!!(rslt = (re.exec(val)))) {
-    start = rslt.index;
-    end = rslt[1].length+start;
-
-    if(pos >= start && pos <= end) {
-      return {
-        start: start,
-        end:   end,
-        val:   rslt[1]
-      }
-    }
-  }
-}
-
-
-},{}],4:[function(require,module,exports){
-var FRACTIONAL_REGEX = /[-+]?(?:[0-9]*\.([0-9]+)|[0-9]+)/;
-
-/**
- * Returns the number of fractional parts. For example, the numbers `0.001`
- * would return `3`.
- *
- * @param {Number|String} val
- * @return {Number} number of fractional parts
- */
-function get(val) {
-  var match = val.toString().match(FRACTIONAL_REGEX);
-  if(match && match[1]) {
-    return match[1].length;
-  }
-  return 0;
-}
-
-/**
- * Return max fractional parts from multiple numbers
- */
-function max() {
-  var i, len, val, ret = 0;
-  for(i=0, len=arguments.length; i<len; i++) {
-    val = get(arguments[i])
-    if(val > ret) {
-      ret = val;
-    }
-  }
-  return ret;
-}
-
-module.exports = {
-  get: get,
-  max: max
-};
-
-},{}],5:[function(require,module,exports){
-/**
- * Set selection of an <input>
- *
- * @param {Element} input
- * @param {Number} start index
- * @param {Number} [end=start] index
- * @return {Element} input
- */
-module.exports = function(input, start, end) {
-	if(end === undefined) end = start;
-
-  input.selectionStart = start;
-  input.selectionEnd = end;
-  input.focus();
-	return input;
-}
-
-
-},{}],6:[function(require,module,exports){
 var url = require("url");
 var debounce = require("lodash.debounce");
-var incremental = require("../../incremental");
+var incremental = require("incremental");
 
 var qs = document.querySelector.bind(document);
 var frameUrl;
@@ -250,8 +55,8 @@ function getAvailableHeight() {
   var containerCS = window.getComputedStyle(containerEl);
 
   // Get the padding
-  border  = parseInt(containerCS.borderTop);
-  border += parseInt(containerCS.borderBottom);
+  border  = parseInt(containerCS.borderTop) || 0;
+  border += parseInt(containerCS.borderBottom) || 0;
 
   bodyHeight = document.body.clientHeight;
   return (bodyHeight - headerEl.offsetHeight - footerEl.offsetHeight -border);
@@ -269,6 +74,10 @@ function updateSelect(sizeStr) {
   sizesEl.value = "-1";
 }
 
+function isNaN(n) {
+  return n !== n;
+}
+
 function updateUI(url, w, h) {
   var urlEl    = qs("#url");
   var widthEl  = qs("#width");
@@ -277,8 +86,8 @@ function updateUI(url, w, h) {
   if(url && urlEl.value !== url) {
     urlEl.value  = url;
   }
-  if(!Number.isNaN(w) && widthEl.value !== w.toString()) widthEl.value  = w;
-  if(!Number.isNaN(h) && heightEl.value !== h.toString()) heightEl.value = h;
+  if(!isNaN(w) && widthEl.value !== w.toString()) widthEl.value  = w;
+  if(!isNaN(h) && heightEl.value !== h.toString()) heightEl.value = h;
 
   updateSelect(w+"x"+h);
 }
@@ -313,12 +122,17 @@ function render() {
 
   var scaledVal = scaleToMax(w, h, pcw, pch, stretch);
 
-  var iframeEl = qs(".page-container iframe");
-  pcEl.style.width = scaledVal.width+"px";
-  pcEl.style.height = scaledVal.height+"px";
+  var borderOffset = 4;
 
-  iframeEl.style["-webkit-transform"] = "scale("+scaledVal.scale+")";
-  iframeEl.style["-webkit-transform-origin"] = "0 0";
+  var iframeEl = qs(".page-container iframe");
+  pcEl.style.width  = scaledVal.width  + borderOffset + "px";
+  pcEl.style.height = scaledVal.height + borderOffset + "px";
+
+  ["-o-", "-webkit-", "-moz-", ""].forEach(function(prefix) {
+    iframeEl.style.setProperty(prefix+"transform", "scale("+scaledVal.scale+")");
+    iframeEl.style.setProperty(prefix+"transform-origin", "0 0");
+  });
+
   iframeEl.style.width = w+"px";
   iframeEl.style.height = h+"px";
 
@@ -434,7 +248,7 @@ window.addEventListener('load', setup, false);
 // HACK!
 window._responsurl = true;
 
-},{"../../incremental":1,"lodash.debounce":12,"url":11}],7:[function(require,module,exports){
+},{"incremental":7,"lodash.debounce":12,"url":6}],2:[function(require,module,exports){
 (function (global){
 /*! http://mths.be/punycode v1.2.4 by @mathias */
 ;(function(root) {
@@ -945,7 +759,7 @@ window._responsurl = true;
 }(this));
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],8:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1031,7 +845,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],9:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1118,13 +932,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],10:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":8,"./encode":9}],11:[function(require,module,exports){
+},{"./decode":3,"./encode":4}],6:[function(require,module,exports){
 /*jshint strict:true node:true es5:true onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true*/
 (function () {
   "use strict";
@@ -1757,7 +1571,202 @@ function parseHost(host) {
 
 }());
 
-},{"punycode":7,"querystring":10}],12:[function(require,module,exports){
+},{"punycode":2,"querystring":5}],7:[function(require,module,exports){
+var percision = require("./lib/percision");
+var selectRange = require("./lib/selection");
+var numberAtPos = require("./lib/number-at-pos");
+var keys = require("./lib/keys");
+
+function defaultModifier(e) {
+  if(e.shiftKey) return 10;
+  if(e.altKey) return 0.1;
+  return 1;
+}
+
+function isNaN(v) {
+  return v !== v;
+}
+
+/**
+ * @param {Function|undefined} incrs
+ * @param {KeyboardEvent} e
+ */
+function hdl(opts, e) {
+  var tmp, start, end, caret, multiplier, modifier, incr, offset;
+  var kc = e.keyCode;
+  var el = e.target;
+  var val = el.value;
+  var origVal = val;
+
+  opts = opts || {};
+
+  if(kc === keys.UP) {
+    multiplier = 1;
+  } else if(kc === keys.DOWN) {
+    multiplier = -1;
+  } else {
+    return;
+  }
+
+  // If up/down keys are pressed always prevent caret movement. This also
+  // prevents the selection from being altered
+  e.preventDefault();
+
+  modifier = opts.modifier || defaultModifier;
+
+  incr = modifier(e);
+  if(incr === undefined) {
+    return;
+  }
+
+  if(opts.partials) {
+    caret = e.target.selectionStart;
+    tmp = numberAtPos(val, caret);
+
+    if(tmp) {
+      val = tmp.val;
+      start = tmp.start;
+      end = tmp.end;
+    }
+  }
+
+  // Is our value a number?
+  val = parseFloat(val);
+  if(val === undefined || isNaN(val)) {
+    return;
+  }
+
+  // Calc new value
+  newVal = (val + incr * multiplier);
+  newVal = newVal.toFixed(percision.max(val, incr));
+
+  // Set the value
+  if(opts.partials) {
+    if(start === caret && newVal.substring(0,1) === "-") {
+      caret += 1;
+    }
+    // Replace in the original string
+    offset = newVal.length - (end-start);
+    if(offset < 0 && caret > end+offset) {
+      caret += offset;
+    }
+    newVal = origVal.slice(0, start) + newVal + origVal.slice(end);
+  }
+
+  // Set new value
+  el.value = newVal;
+
+  // Reset the selection
+  selectRange(el, caret);
+}
+
+function handler(opts) {
+  return function(e) {
+    hdl(opts, e);
+  }
+}
+
+module.exports = handler;
+
+},{"./lib/keys":8,"./lib/number-at-pos":9,"./lib/percision":10,"./lib/selection":11}],8:[function(require,module,exports){
+module.exports = {
+  UP:   38,
+  DOWN: 40
+};
+
+},{}],9:[function(require,module,exports){
+/**
+ * Get the number string at pos. For example given the position `7` and string
+ *
+ *     "rgba(200, 100, 0)"
+ *            ^
+ *            |
+ *            |
+ *          [pos]
+ *
+ * It'll return
+ *
+ *     {val: 200, start: 6, end: 8};
+ *
+ * @param {Number|String} val
+ * @param {Number} pos
+ */
+module.exports = function(val, pos) {
+  var rslt, start, end, re = /([-+]?(?:[0-9]*\.[0-9]+|[0-9]+))/g;
+	val = val.toString();
+
+  while(!!(rslt = (re.exec(val)))) {
+    start = rslt.index;
+    end = rslt[1].length+start;
+
+    if(pos >= start && pos <= end) {
+      return {
+        start: start,
+        end:   end,
+        val:   rslt[1]
+      }
+    }
+  }
+}
+
+
+},{}],10:[function(require,module,exports){
+var FRACTIONAL_REGEX = /[-+]?(?:[0-9]*\.([0-9]+)|[0-9]+)/;
+
+/**
+ * Returns the number of fractional parts. For example, the numbers `0.001`
+ * would return `3`.
+ *
+ * @param {Number|String} val
+ * @return {Number} number of fractional parts
+ */
+function get(val) {
+  var match = val.toString().match(FRACTIONAL_REGEX);
+  if(match && match[1]) {
+    return match[1].length;
+  }
+  return 0;
+}
+
+/**
+ * Return max fractional parts from multiple numbers
+ */
+function max() {
+  var i, len, val, ret = 0;
+  for(i=0, len=arguments.length; i<len; i++) {
+    val = get(arguments[i])
+    if(val > ret) {
+      ret = val;
+    }
+  }
+  return ret;
+}
+
+module.exports = {
+  get: get,
+  max: max
+};
+
+},{}],11:[function(require,module,exports){
+/**
+ * Set selection of an <input>
+ *
+ * @param {Element} input
+ * @param {Number} start index
+ * @param {Number} [end=start] index
+ * @return {Element} input
+ */
+module.exports = function(input, start, end) {
+	if(end === undefined) end = start;
+
+  input.selectionStart = start;
+  input.selectionEnd = end;
+  input.focus();
+	return input;
+}
+
+
+},{}],12:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2073,4 +2082,4 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{}]},{},[6])
+},{}]},{},[1])
