@@ -1,6 +1,6 @@
 var url = require("url");
 var debounce = require("lodash.debounce");
-var incremental = require("../../incremental");
+var incremental = require("incremental");
 
 var qs = document.querySelector.bind(document);
 var frameUrl;
@@ -54,8 +54,8 @@ function getAvailableHeight() {
   var containerCS = window.getComputedStyle(containerEl);
 
   // Get the padding
-  border  = parseInt(containerCS.borderTop);
-  border += parseInt(containerCS.borderBottom);
+  border  = parseInt(containerCS.borderTop) || 0;
+  border += parseInt(containerCS.borderBottom) || 0;
 
   bodyHeight = document.body.clientHeight;
   return (bodyHeight - headerEl.offsetHeight - footerEl.offsetHeight -border);
@@ -73,6 +73,10 @@ function updateSelect(sizeStr) {
   sizesEl.value = "-1";
 }
 
+function isNaN(n) {
+  return n !== n;
+}
+
 function updateUI(url, w, h) {
   var urlEl    = qs("#url");
   var widthEl  = qs("#width");
@@ -81,8 +85,8 @@ function updateUI(url, w, h) {
   if(url && urlEl.value !== url) {
     urlEl.value  = url;
   }
-  if(!Number.isNaN(w) && widthEl.value !== w.toString()) widthEl.value  = w;
-  if(!Number.isNaN(h) && heightEl.value !== h.toString()) heightEl.value = h;
+  if(!isNaN(w) && widthEl.value !== w.toString()) widthEl.value  = w;
+  if(!isNaN(h) && heightEl.value !== h.toString()) heightEl.value = h;
 
   updateSelect(w+"x"+h);
 }
@@ -117,12 +121,17 @@ function render() {
 
   var scaledVal = scaleToMax(w, h, pcw, pch, stretch);
 
-  var iframeEl = qs(".page-container iframe");
-  pcEl.style.width = scaledVal.width+"px";
-  pcEl.style.height = scaledVal.height+"px";
+  var borderOffset = 4;
 
-  iframeEl.style["-webkit-transform"] = "scale("+scaledVal.scale+")";
-  iframeEl.style["-webkit-transform-origin"] = "0 0";
+  var iframeEl = qs(".page-container iframe");
+  pcEl.style.width  = scaledVal.width  + borderOffset + "px";
+  pcEl.style.height = scaledVal.height + borderOffset + "px";
+
+  ["-o-", "-webkit-", "-moz-", ""].forEach(function(prefix) {
+    iframeEl.style.setProperty(prefix+"transform", "scale("+scaledVal.scale+")");
+    iframeEl.style.setProperty(prefix+"transform-origin", "0 0");
+  });
+
   iframeEl.style.width = w+"px";
   iframeEl.style.height = h+"px";
 
