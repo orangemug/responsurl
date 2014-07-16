@@ -97,6 +97,19 @@ form #sizes {
   width: 220px;
 }
 
+.url-fs {
+  padding-right: 30px;
+  position: relative;
+}
+
+.url-fs .reload {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  line-height: 28px;
+  color: black;
+}
+
 form .screen-size input {
   display: inline-block;
   width: 45px;

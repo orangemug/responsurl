@@ -188,6 +188,7 @@ function setup() {
   var heightEl = qs("#height");
   var sizeEl   = qs("#sizes");
   var switchEl = qs(".js-switch");
+  var reloadEl = qs(".js-reload");
 
   var hdl = incremental({
     modifier: function(e) {
@@ -204,6 +205,12 @@ function setup() {
     updateUrl();
     e.preventDefault();
   })
+
+  reloadEl.addEventListener("click", function(e) {
+    var el = qs(".page-container iframe");
+    el.src = el.src;
+    e.preventDefault();
+  });
 
   // incremental handlers
   widthEl.addEventListener("keyup", hdl);
