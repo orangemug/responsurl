@@ -208,7 +208,11 @@ function setup() {
 
   reloadEl.addEventListener("click", function(e) {
     var el = qs(".page-container iframe");
-    el.src = el.src;
+    var src = el.src;
+
+    // HACK: Force reload.
+    el.src = "about:blank";
+    el.src = src;
     e.preventDefault();
   });
 
